@@ -7,7 +7,7 @@ def get_template_path(path=None) -> Path:
     """
 
     """
-    coi_path = Path(__file__).parents[1]
+    coi_path = Path(__file__).parents[0]
     return coi_path / 'templates'
 
 

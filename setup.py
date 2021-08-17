@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
     name='coi',
     packages=['coi'],
-    version='0.0.1',
+    version='0.0.3',
     license='MIT',
     description='See output/input status of all sub-folders',
     long_description=long_description,
@@ -25,7 +25,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX",
         "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
         "Topic :: Software Development :: Version Control :: Git",
         "Topic :: Terminals",
         "Topic :: Utilities",

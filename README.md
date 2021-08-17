@@ -1,4 +1,4 @@
-# coi: manager for shell script templates
+# coi: manage shell script templates for reuse
 
 I often improvise bash scripts and later regret not saving them.
 This tool manages shell script templates for reuse.
