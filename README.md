@@ -16,6 +16,11 @@ For example, the variable parts of the following batch execution may be
 for dname in *_5/; do python3 $ABIN/generate.py $dname${dname%/}-out.cms; done
 ```
 
+After saving a template, we can rerun this command at current working directory with
+```
+coi -i "*_5" -c "python3 $ABIN/generate.py"
+```
+
 ## commands
 
 - `templates` sub command
@@ -77,6 +82,10 @@ Essentially this is a tool for shell script templating, with up to 3 substitutio
   - the user defined templates shadow default ones if name clashes
 - when a command is run once in `path`, save `path/.coi/1.json` where the keys
   are c, o, i, and template name
+
+TODO:
+- default template
+- state machine when running main: q, r (always show the shell command to be run)
 
 ### integration with fzf
 

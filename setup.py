@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
     name='coi',
     packages=['coi'],
-    version='0.0.3',
+    version='0.0.4',
     license='MIT',
     description='See output/input status of all sub-folders',
     long_description=long_description,

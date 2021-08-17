@@ -1,1 +1,1 @@
-include coi/templates
+include coi/templates/*.tmpl
