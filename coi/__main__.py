@@ -65,8 +65,19 @@ def main(argv=None):
         p.print_help()  # pragma: no cover
     elif 'func' in args:  # sub commands
         args.func(args)
-    else:  # execute
-        print(utils.get_cmd(args))
+    else:
+        cmd = utils.get_cmd(args)
+        print(cmd)
+        if args.y:  # execute
+            utils.run_cmd(cmd)
+        else:
+            #got = input('[q]uit\t[r]un:')
+            print('[q]uit\t[r]un:', end=' ', flush=True)
+            got = utils.get_char()
+            print(got)
+            if got == 'r':
+                utils.run_cmd(cmd)
+
 
 if __name__ == '__main__':
     main()  # pragma: no cover
