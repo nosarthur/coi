@@ -18,11 +18,12 @@ for dname in *_5/; do python3 $ABIN/generate.py $dname${dname%/}-out.cms; done
 
 After saving a template, we can rerun this command at current working directory with
 ```
-coi -i "*_5" -c "python3 $ABIN/generate.py"
+coi run -i "*_5" -c "python3 $ABIN/generate.py"
 ```
 
 ## commands
 
+- `run` sub command
 - `templates` sub command
     - `coi templates add <name>`
     - `coi templates add <name> -t <template-file>`

@@ -1,7 +1,22 @@
+import os
+import sys
+import tty
+import termios
 import subprocess
 from pathlib import Path
 from string import Template
 from argparse import Namespace
+from typing import List, Dict
+from functools import lru_cache
+
+
+def get_config_dir(root=None) -> Path:
+    if root is None:
+        root = os.environ.get('XDG_CONFIG_HOME') or os.path.join(
+            os.path.expanduser('~'), '.config')
+        return Path(os.path.join(root, "coi"))
+    else:
+        return Path(os.path.join(root, ".coi"))
 
 
 def get_template_path(path=None) -> Path:
@@ -12,27 +27,39 @@ def get_template_path(path=None) -> Path:
     return coi_path / 'templates'
 
 
-def get_template(name=None) -> Template:
+@lru_cache()
+def get_templates() -> Dict[str, Path]:
     """
+    Return system and user-defined templates
+    """
+    templates = {}
+    # system
+    path = get_template_path()
+    for fname in path.glob('*.tmpl'):
+        name = fname.stem
+        templates[name] = path / fname
 
+    # user defined
+
+    return templates
+
+
+def get_template(fname: Path) -> Template:
     """
-    if name:
-        return
-    fname = get_template_path() / 'ic-loop.tmpl'
+    @name: If None, return all templates in the path; otherwise only the chosen
+           one
+    """
     with open(fname, "r") as f:
         templ = Template(f.read())
     return templ
 
-# val = subprocess.check_call("./script.sh '%s'" % arg, shell=True)
-# subprocess.run()
 
 def get_cmd(args: Namespace) -> str:
     """
 
     """
-    # load template string
-
-    templ = get_template()
+    t_name = args.t
+    templ = get_template(get_templates()[t_name])
     return templ.substitute(vars(args))
 
 
@@ -43,8 +70,10 @@ def run_cmd(cmd: str):
     subprocess.run(cmd, shell=True,)
 
 
-def get_char():
-    import sys, tty, termios
+def get_char() -> str:
+    """
+    Get one character from terminal
+    """
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
