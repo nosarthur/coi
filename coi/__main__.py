@@ -80,9 +80,9 @@ def main(argv=None):
     p_run.add_argument('-i', metavar='i-cmd', default='',
             help='shell command on input files')
     p_run.add_argument('-t', metavar='template', default=_get_default_template(),
-            help='template name')
+            help='template name; use default if not set explicitly')
     p_run.add_argument('path', nargs='?', type=Path, default=Path.cwd(),
-            help='folder to run commands on')
+            help='path to run commands on; use current path if omitted')
     p_run.add_argument('-y', action='store_true',
             help='run shell script without confirmation')
 

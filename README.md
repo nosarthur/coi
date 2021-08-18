@@ -1,3 +1,9 @@
+[![PyPi version](https://img.shields.io/pypi/v/coi.svg?color=blue)](https://pypi.org/project/coi/)
+[![licence](https://img.shields.io/pypi/l/coi.svg)](https://github.com/nosarthur/coi/blob/master/LICENSE)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/coi.svg)](https://pypistats.org/packages/coi)
+
+
+
 # coi: manage shell script templates for reuse
 
 I often improvise bash scripts and later regret not saving them.
@@ -6,6 +12,20 @@ This tool manages shell script templates for reuse.
 1. run shell command templates with substitutions
 2. keep track of commands run in each folder for later reference
 1. store common templates
+
+
+```
+00:46 nosarthur src$ coi run -c 'echo $f' -i '*' -t for-loop
+
+cd /Users/nosarthur/src/
+for f in *; do
+  echo $f
+done
+
+[q]uit	[r]un: r
+
+....
+```
 
 For example, the variable parts of the following batch execution may be
 
