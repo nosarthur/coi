@@ -119,6 +119,7 @@ coi -c "wc -l" \
       to your favorate editor.
     - `coi templates rm <name>`: delete template `<name>`
     - `coi templates set <name>`: set template `<name>` as default template
+    - `coi templates set`: show default template name
 
 The `run` command takes up to 3 parameters `c`, 'o', and 'i'. If template `-t`
 is not specified, default template is used. If `<path>` is omitted, current
@@ -143,12 +144,10 @@ Essentially this is a tool for shell script templating, with up to 3 substitutio
   - system folder: default
   - XDG/coi/templates/: user defined
   - the user defined templates shadow default ones if name clashes
-- when a command is run once in `path`, save `path/.coi/1.json` where the keys
-  are c, o, i, and template name
 
 TODO:
 - default template
-- state machine when running main: q, r (always show the shell command to be run)
+- auto complete for templates
 
 ### integration with fzf
 

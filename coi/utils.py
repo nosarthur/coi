@@ -6,8 +6,21 @@ import subprocess
 from pathlib import Path
 from string import Template
 from argparse import Namespace
-from typing import List, Dict
+from typing import List, Dict, Union
 from functools import lru_cache
+
+
+@lru_cache()
+def get_context() -> Union[Path, None]:
+    """
+    Return the default template: either a group name or 'none'
+    """
+    config_dir = get_config_dir()
+    matches = list(config_dir.glob('*.default'))
+    if len(matches) > 1:
+        print("Cannot have multiple .default file")
+        sys.exit(1)
+    return matches[0] if matches else None
 
 
 def get_config_dir(root=None) -> Path:
@@ -28,17 +41,17 @@ def get_system_template_path(path=None) -> Path:
 
 
 @lru_cache()
-def get_templates() -> Dict[str, Path]:
+def get_tmpl_paths() -> Dict[str, Path]:
     """
-    Return system and user-defined templates
+    Return system and user-defined templates' paths
     """
-    templates = {}
+    t_paths = {}
     paths = (get_system_template_path(), get_config_dir(), )
     for p in paths:
         for fname in p.glob('*.tmpl'):
             name = fname.stem
-            templates[name] = p / fname
-    return templates
+            t_paths[name] = p / fname
+    return t_paths
 
 
 def get_template(fname: Path) -> Template:
@@ -56,7 +69,7 @@ def get_cmd(args: Namespace) -> str:
 
     """
     t_name = args.t
-    templ = get_template(get_templates()[t_name])
+    templ = get_template(get_tmpl_paths()[t_name])
     return templ.substitute(vars(args))
 
 
