@@ -19,7 +19,7 @@ def get_config_dir(root=None) -> Path:
         return Path(os.path.join(root, ".coi"))
 
 
-def get_template_path(path=None) -> Path:
+def get_system_template_path(path=None) -> Path:
     """
 
     """
@@ -33,14 +33,11 @@ def get_templates() -> Dict[str, Path]:
     Return system and user-defined templates
     """
     templates = {}
-    # system
-    path = get_template_path()
-    for fname in path.glob('*.tmpl'):
-        name = fname.stem
-        templates[name] = path / fname
-
-    # user defined
-
+    paths = (get_system_template_path(), get_config_dir(), )
+    for p in paths:
+        for fname in p.glob('*.tmpl'):
+            name = fname.stem
+            templates[name] = p / fname
     return templates
 
 

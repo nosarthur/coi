@@ -6,56 +6,81 @@
 
 # coi: manage shell script templates for reuse
 
-I often improvise bash scripts and later regret not saving them.
-This tool manages shell script templates for reuse.
+I often improvise the same (boring) bash scripts over and over again.
+This is my solution to cut the repetitive work.
 
-1. run shell command templates with substitutions
+This command-line tool can
+
+1. manage (CRUD) templates
+1. run template command with substitutions
 2. keep track of commands run in each folder for later reference
-1. store common templates
 
+
+## examples
+
+Three examples are in order here.
+They are all small frequent `for` loops.
+One could alternatively define shell functions for them.
+
+In the first example, I need to delete jobs with some key word. The varying part
+is `BIHYEW10`.
 
 ```
-00:46 nosarthur src$ coi run -c 'echo $f' -i '*' -t for-loop
-
-cd /Users/nosarthur/src/
-for f in *; do
-  echo $f
+for x in `qstat -u nosarthur |grep BIHYEW10 |awk '{print $1}'`; do
+  qdel $x
 done
-
-[q]uit	[r]un: r
-
-....
 ```
 
-For example, the variable parts of the following batch execution may be
+With `coi` set up, I can simply do
+
+```
+coi run -i BIHYEW10
+```
+
+The corresponding template is
+
+```
+for x in `qstat -u nosarthur |grep $i |awk '{print $$1}'`; do
+  qdel $$x
+done
+```
+
+Note that it's simply the Python
+[template strings](https://docs.python.org/3/library/string.html#template-strings ]).
+
+In the second example, I often need to process data with a common directory
+pattern, e.g., `ABC_5/ABC-out.cms`:
+
+```bash
+for dname in *_5/; do python3 process.py $dname${dname%/}-out.cms; done
+```
+
+Here the variable parts are
 
 1. folder name pattern: `*_5/`
 2. command: `$ABIN/generate.py`
 
-```bash
-for dname in *_5/; do python3 $ABIN/generate.py $dname${dname%/}-out.cms; done
+
+After saving a template, we can run
+```
+coi run -i "*_5" -c "python3 process.py" some-path
 ```
 
-After saving a template, we can rerun this command at current working directory with
+and the template is
+
 ```
-coi run -i "*_5" -c "python3 $ABIN/generate.py"
+cd $path
+for dname in $i; do
+  $c $$dname$${dname%/}-out.cms
+done
 ```
+where `some-path` will substitute `$path`.
 
-## commands
 
-- `run` sub command
-- `templates` sub command
-    - `coi templates add <name>`
-    - `coi templates add <name> -t <template-file>`
-    - `coi templates edit <name>`
-    - `coi templates ls`
-    - `coi templates rm <name>`
-    - `coi templates set <name>`
-    - `coi templates show <name>`
+In the third example, I often want to know how many jobs are done in many folders,
+and the criteria of 'done' may vary.
 
-## example
-
-Suppose the folder structure
+Suppose the folder structure is as follows
 ```
 jobs-folder
 ├── sub1
@@ -82,17 +107,34 @@ coi -c "wc -l" \
     jobs-folder
 ```
 
-```bash
-sub1 (1 / 2)
-sub2 (0 / 2)
-sub3 (2 / 2)
-sub4 (1 / 1)
-```
+## commands
+
+- `run` command
+    - `coi run -i <i> -c <c> -o <o> -t <name> <path>`: run template command `<name>`
+- `templates` command
+    - `coi templates add <name>`: create a new template called `<name>`
+    - `coi templates cp <name> <new-name>`: copy `<name>` to a new template called `<new-name>`
+    - `coi templates ll <name>`: show content of template `<name>`
+    - `coi templates ls <name>`: show path of template `<name>`; You can pass it
+      to your favorate editor.
+    - `coi templates rm <name>`: delete template `<name>`
+    - `coi templates set <name>`: set template `<name>` as default template
+
+The `run` command takes up to 3 parameters `c`, 'o', and 'i'. If template `-t`
+is not specified, default template is used. If `<path>` is omitted, current
+working directory is used.
 
 ## customization
 
-Python [template strings](https://docs.python.org/3/library/string.html#template-strings ])
+User defined templates are saved/searched in `$XDG_CONFIG_HOME/coi`
+(most likely `~/.config/coi/`).
 
+## other tune-ups
+
+```
+alias coir='coi run'
+alias coit='coi template'
+```
 ## design
 
 Essentially this is a tool for shell script templating, with up to 3 substitutions.

@@ -12,12 +12,13 @@ import pkg_resources
 from itertools import chain
 from pathlib import Path
 import glob
+import shutil
 
 from . import utils
 
 
 def f_run(args):
-    print(args)
+    #print(args)
     cmd = utils.get_cmd(args)
     print(cmd)
     if args.y:  # execute
@@ -31,7 +32,7 @@ def f_run(args):
 
 
 def f_tmpl(args):
-    print(args)
+    #print(args)
     cmd = args.tmpl_cmd
     tmpl = args.tmpl
     if cmd == 'll':
@@ -44,7 +45,30 @@ def f_tmpl(args):
             print('='*5, name, '='*5)
             print(utils.get_template(path).safe_substitute())
     elif cmd == 'ls':
-        print('\n'.join(utils.get_templates().keys()))
+        if tmpl:  # show its path
+            print(utils.get_templates()[tmpl])
+        else:     # show all template names
+            print('\n'.join(sorted(utils.get_templates().keys())))
+    elif cmd == 'cp':
+        config_dir = utils.get_config_dir()
+        config_dir.mkdir(parents=True, exist_ok=True)
+        from_name = config_dir / (tmpl + '.tmpl')
+        to_name = config_dir / (args.new_tmpl + '.tmpl')
+        print(to_name)
+        shutil.copy(from_name, to_name)
+    elif cmd == 'add':
+        # maybe trigger system EDITOR?
+        print('type the template, end with CTRL+D:')
+        s = sys.stdin.read()
+        config_dir = utils.get_config_dir()
+        config_dir.mkdir(parents=True, exist_ok=True)
+        fname = config_dir / (tmpl + '.tmpl')
+        with open(fname, 'w') as f:
+            f.write(s)
+    elif cmd == 'rm':
+        templates = utils.get_templates()
+        for t in tmpl:
+            templates[t].unlink()
 
 
 def _get_default_template() -> str:
@@ -53,6 +77,17 @@ def _get_default_template() -> str:
     """
     # TODO: check setting in .config
     return 'for-loop'
+
+
+def _template_name(name: str) -> str:
+    """
+
+    """
+    existing = utils.get_templates()
+    if name in existing:
+        print(f"Cannot use template name {name} since it already exists.")
+        sys.exit(1)
+    return name
 
 
 def main(argv=None):
@@ -97,10 +132,26 @@ def main(argv=None):
                        choices=utils.get_templates(),
                        help="template to show")
     pg_ls = tmpl_cmds.add_parser('ls', description='List all template names')
+    pg_ls.add_argument('tmpl',
+                       nargs='?',
+                       choices=utils.get_templates(),
+                       help="show template path")
+    pg_cp = tmpl_cmds.add_parser('cp', description='Copy template')
+    pg_cp.add_argument('tmpl',
+                       choices=utils.get_templates(),
+                       help="template name to copy from")
+    pg_cp.add_argument('new_tmpl',
+                       type=_template_name,
+                       help="template name to copy to")
+    pg_add = tmpl_cmds.add_parser('add', description='Add template')
+    pg_add.add_argument('tmpl',
+                       type=_template_name,
+                       help="template name to add")
     pg_rm = tmpl_cmds.add_parser('rm', description='Remove template')
     pg_rm.add_argument('tmpl',
+                       nargs='+',
                        choices=utils.get_templates(),
-                       help="template to delete")
+                       help="template(s) to delete")
     pg_set = tmpl_cmds.add_parser('set', description='Set template')
     pg_set.add_argument('tmpl',
                        choices=utils.get_templates(),
