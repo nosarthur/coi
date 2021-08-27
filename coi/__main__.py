@@ -91,7 +91,7 @@ def _get_default_template() -> str:
     """
     user_defined = utils.get_context()
     if user_defined is None:
-        return 'for-loop'
+        return 'for'
     return user_defined.stem
 
 
@@ -124,7 +124,7 @@ def main(argv=None):
     p_run = subparsers.add_parser('run', description='run template command',
             help='run template command')
     p_run.set_defaults(func=f_run)
-    p_run.add_argument('-c', metavar='c-cmd',
+    p_run.add_argument('-c', metavar='c-cmd', default='echo $f',
             help='reduction shell command, e.g., "wc -l"')
     p_run.add_argument('-o', metavar='o-cmd', default='',
             help='shell command on output files')

@@ -3,10 +3,16 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/coi.svg)](https://pypistats.org/packages/coi)
 
 
+# This project is no longer in development
+
+I think the whole idea is invalid. A better solution is to
+
+- improvise the bash script
+- save it at the running directory
 
 # coi: manage shell script templates for reuse
 
-I often improvise the same (boring) bash scripts over and over again.
+I often improvise the same (annoying) bash scripts over and over again.
 This is my solution to cut the repetitive work.
 
 This command-line tool can
@@ -15,23 +21,21 @@ This command-line tool can
 1. run template command with substitutions
 2. keep track of commands run in each folder for later reference
 
+One could alternatively define shell functions for them.
 
 ## examples
 
-Three examples are in order here.
-They are all small frequent `for` loops.
-One could alternatively define shell functions for them.
 
 In the first example, I need to delete jobs with some key word. The varying part
 is `BIHYEW10`.
 
 ```
-for x in `qstat -u nosarthur |grep BIHYEW10 |awk '{print $1}'`; do
+for x in `qstat -u $USER |grep BIHYEW10 |awk '{print $1}'`; do
   qdel $x
 done
 ```
 
-With `coi` set up, I can simply do
+With `coi` set up, I can run
 
 ```
 coi run -i BIHYEW10
@@ -101,8 +105,7 @@ jobs-folder
 ```
 
 ```bash
-coi -c "wc -l" \
-    -o "ll *.output" \
+coi -o "ll *.output" \
     -i "ll *.input" \
     jobs-folder
 ```

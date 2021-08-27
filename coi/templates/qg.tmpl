@@ -1,0 +1,4 @@
+
+for x in `qstat -u $$USER |grep $i |awk '{print $$1}'`; do
+  qdel $$x
+done
